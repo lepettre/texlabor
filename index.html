@@ -334,7 +334,7 @@ body[data-design="d"]{--bg:#fff;--surface:#fff;--surface2:#f5f5f5;--ink:#101010;
 </style>
 </head>
 <body>
-<header class="top"><div class="brand"><div class="logo" aria-label="Textlabor"><i class="lg-mark"></i><span class="lg-t">Text</span><span class="lg-l">labor</span><span class="lg-d">.</span></div><div class="top-stat" id="top-stat"></div><button class="gear" data-act="appearance" aria-label="Gestaltung und Einstellungen" title="Gestaltung und Einstellungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25" /> <path d="M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /> <path d="M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /> <path d="M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg></button></div></header>
+<header class="top"><div class="brand"><div class="logo" aria-label="Textlabor"><i class="lg-mark"></i><span class="lg-t">Text</span><span class="lg-l">labor</span><span class="lg-d">.</span></div><button class="gear" data-act="appearance" aria-label="Gestaltung und Einstellungen" title="Gestaltung und Einstellungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25" /> <path d="M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /> <path d="M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /> <path d="M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg></button></div></header>
 
 <nav class="tabs" role="tablist" id="tabs">
   <button role="tab" data-tab="ana" aria-selected="true">Analyse</button>
@@ -346,7 +346,7 @@ body[data-design="d"]{--bg:#fff;--surface:#fff;--surface2:#f5f5f5;--ink:#101010;
 <main>
 
 <!-- ANALYSIEREN -->
-<section class="view" id="v-ana"><div class="leadrow"><p class="lead" id="lead-txt"></p><div class="seg-s modeseg" id="modeseg" role="group" aria-label="Modus"></div></div><div class="anabar" id="anabar"></div><div class="fpanel" id="fpanel" hidden></div><div class="active" id="active"></div><p class="open-count" id="ana-open" aria-live="polite"></p><div class="stage" id="stage"></div><div class="benchmark"><div class="benchline"><span id="bench-label">0 von 0 Texten fertig</span><span class="bench-caption">im Bestand</span></div><div class="benchmark-track" role="img" aria-label="Fertiggestellte Texte"><i id="bench-bar"></i></div></div></section>
+<section class="view" id="v-ana"><div class="leadrow"><p class="lead" id="lead-txt"></p><div class="seg-s modeseg" id="modeseg" role="group" aria-label="Modus"></div></div><div class="anabar" id="anabar"></div><div class="fpanel" id="fpanel" hidden></div><div class="active" id="active"></div><div class="stage" id="stage"></div><div class="benchmark"><div class="benchline"><span id="bench-label">0 von 0 Texten fertig</span><span class="bench-caption">im Bestand</span></div><div class="benchmark-track" role="img" aria-label="Fertiggestellte Texte"><i id="bench-bar"></i></div></div></section>
 
 <!-- TEXTE -->
 <section class="view" id="v-tex" hidden><div class="toolbar text-toolbar"><button class="btn primary" data-act="addopen">Text hinzufügen</button><input type="search" class="search" id="q" placeholder="Titel, Autor, Teaser oder Schlagwort suchen" aria-label="Texte suchen" data-search><select class="sel" data-sc="ui" data-k="sort" id="sortsel" aria-label="Sortierung" style="width:auto"><option value="datum-neu">Datum, neu zuerst</option><option value="datum-alt">Datum, alt zuerst</option><option value="laenge-lang">Länge, lang zuerst</option><option value="laenge-kurz">Länge, kurz zuerst</option><option value="autor">Autor A–Z</option><option value="medium">Medium</option><option value="zugang">Plus / Heft / frei</option><option value="bewertet">Analysestand</option><option value="titel">Überschrift A–Z</option></select><button class="btn" data-act="backup-menu">Backup / Export</button></div><div class="tex-actions"><button class="btn sm" data-act="selvisible">Alle auswählen</button><button class="btn sm" data-act="selnone">Auswahl aufheben</button><span class="selection-status" id="selection-status"></span></div><details class="collection-panel"><summary>Sammlungen</summary><div class="collection-inner"><p class="explain">Sammlungen bündeln Texte. Antippen filtert die Liste; die Checkbox wählt ihre Texte aus.</p><div class="samlist" id="samlist"></div><div class="samadd"><input class="inp search" id="samnew" placeholder="Neue Sammlung, z. B. Auslandsressort 13.10." aria-label="Name der neuen Sammlung"><button class="btn" data-act="samnew">Anlegen</button></div></div></details><div class="filters" id="tex-filters"></div><div class="active" id="tex-active"></div><div class="sumline" id="tex-sum"></div><div class="list" id="tex-list"></div></section>
@@ -455,7 +455,7 @@ body[data-design="d"]{--bg:#fff;--surface:#fff;--surface2:#f5f5f5;--ink:#101010;
   </div>
 </dialog>
 
-<footer class="app-footer"><button class="link" data-act="privacy-open">Datenschutz & Hinweise</button><a id="imprint-link" hidden target="_blank" rel="noopener noreferrer">Impressum</a></footer><dialog id="dlg-privacy" aria-labelledby="privacy-title"><div class="dlg"><div class="dlg-head"><div><h3 id="privacy-title">Datenschutz & Hinweise</h3></div><button class="btn ghost sm" data-act="privacy-close">Schließen</button></div><div class="privacy-copy"><p><b>Lokale Speicherung:</b> Texte, Sammlungen und Bewertungen bleiben im lokalen Speicher dieses Browsers. Die App synchronisiert und überträgt sie nicht.</p><p><b>Hosting:</b> Beim Öffnen der App verarbeitet der Hosting-Anbieter übliche Verbindungsdaten, etwa IP-Adresse und Zeitstempel. Das hängt vom gewählten Hosting ab.</p><p><b>PDF:</b> Für PDF-Import wird nach deiner Zustimmung pdf.js von cdnjs/Cloudflare geladen. Dabei werden übliche Verbindungsdaten an den Anbieter übertragen; die PDF-Datei selbst wird im Browser verarbeitet.</p><p><b>Inhalte:</b> Verwende nur Texte, die du rechtmäßig verarbeiten darfst. Das Tool ersetzt keine Prüfung von Urheber-, Datenschutz- oder Persönlichkeitsrechten. Dieses Hinweisfeld ist keine Rechtsberatung.</p><button class="btn danger" data-act="clear-local">Alle lokalen Daten löschen</button></div></div></dialog><div id="night-rail" aria-label="Sammlungen und Tastatur"></div>
+<footer class="app-footer"><button class="link" data-act="privacy-open">Datenschutz & Hinweise</button><a id="imprint-link" hidden target="_blank" rel="noopener noreferrer">Impressum</a></footer><dialog id="dlg-privacy" aria-labelledby="privacy-title"><div class="dlg"><div class="dlg-head"><div><h3 id="privacy-title">Datenschutz & Hinweise</h3></div><button class="btn ghost sm" data-act="privacy-close">Schließen</button></div><div class="privacy-copy"><p><b>Lokale Speicherung:</b> Texte, Sammlungen und Bewertungen bleiben im lokalen Speicher dieses Browsers. Die App synchronisiert und überträgt sie nicht.</p><p><b>Hosting:</b> Beim Öffnen der App verarbeitet der Hosting-Anbieter übliche Verbindungsdaten, etwa IP-Adresse und Zeitstempel. Das hängt vom gewählten Hosting ab.</p><p><b>PDF:</b> Für PDF-Import wird nach deiner Zustimmung pdf.js von cdnjs/Cloudflare geladen. Dabei werden übliche Verbindungsdaten an den Anbieter übertragen; die PDF-Datei selbst wird im Browser verarbeitet.</p><p><b>Inhalte:</b> Verwende nur Texte, die du rechtmäßig verarbeiten darfst. Das Tool ersetzt keine Prüfung von Urheber-, Datenschutz- oder Persönlichkeitsrechten. Dieses Hinweisfeld ist keine Rechtsberatung.</p><button class="btn danger" data-act="clear-local">Alle lokalen Daten löschen</button></div></div></dialog>
 <datalist id="dl-med"></datalist>
 <datalist id="dl-tag"></datalist>
 <datalist id="dl-sam"></datalist>
@@ -636,9 +636,9 @@ const modeDone=t=>ui.mode==='fn'?fnPct(t)>=FERTIG_PCT:status(t)==='fertig';
 function renderHeader(){
  const chosen=ui.f.sam.length===1?S.texts.filter(t=>t.sammlungen.includes(ui.f.sam[0])):S.texts;
  const done=chosen.filter(modeDone).length,total=chosen.length;
- {const all=S.texts;const zT=sumA(all.map(zeichen));const zB=sumA(all.flatMap(t=>t.absaetze.map(p=>(ui.mode==='fn'?p.fn!==null:(p.rel==='y'||p.rel==='n'))?p.zeichen:0)));const pc=zT?Math.round(100*zB/zT):0;const ts=$('#top-stat');if(ts)ts.innerHTML=`<i class="ts-bar"><u style="width:${pc}%"></u></i><b>${pc}%</b><span>Gesamtbestand ${ui.mode==='fn'?'klassifiziert':'bewertet'}</span><em>· ${all.filter(modeDone).length}/${all.length} Texte fertig</em>`;}
+
  const lab=$('#bench-label'),bar=$('#bench-bar');if(lab)lab.textContent=`${done} von ${total} Texten fertig`;if(bar)bar.style.width=(total?Math.round(done*100/total):0)+'%';
- const rail=$('#night-rail');if(rail)rail.innerHTML=`<strong>Sammlungen</strong>${S.sammlungen.length?S.sammlungen.map(n=>`<button class="night-collection ${ui.f.sam.includes(n)?'on':''}" data-act="nightfilter" data-v="${esc(n)}" title="${esc(n)}">${esc(n)}</button>`).join(''):'<span>Noch keine Sammlungen.</span>'}<div style="margin-top:12px">${ui.mode==='fn'?'1–8 Aufbau<br>O O-Ton · F Fremdstimme · Z zurück':'← Nein · → Ja<br>↓ Kontext fehlt · Z zurück'}</div>`;
+
  const ss=$('#selection-status');if(ss)ss.textContent=ui.sel.size?`${ui.sel.size} ausgewählt`:'';const bs=$('#backup-selection');if(bs)bs.textContent=ui.sel.size?`${ui.sel.size} Text(e) ausgewählt`:'Wähle zuerst Texte aus, um eine Auswahl zu exportieren.';
 }
 
@@ -651,7 +651,7 @@ function renderAna(){
  $('#anabar').innerHTML=`${msWidget('f','sam')}<button class="shuf" data-act="shuffle" aria-pressed="${ui.shuffle}" title="Zufällige Reihenfolge ein- oder ausschalten"><span class="ico">${ICON_SHUF}</span><span>Zufall<small>${ui.shuffle?'an':'aus'}</small></span></button>${ui.shuffle?`<button class="iconbtn" data-act="reshuffle" aria-label="Neu mischen" title="Neu mischen">${ICON_RESH}</button>`:''}<button class="btn fbtn" data-act="fopen" aria-expanded="${ui.fopen}">${ICON_FILT} Filter${nf?`<span class="cnt">${nf}</span>`:''}</button>`;
  const fp=$('#fpanel');fp.hidden=!ui.fopen;if(ui.fopen)fp.innerHTML=`<div class="frow"><span class="ft">Texte</span>${['aut','med','zug','len','tag','xtag'].map(k=>msWidget('f',k)).join('')}</div><div class="frow"><span class="ft">Stand</span>${msWidget('f','status')}<button class="btn sm" data-act="showrated" aria-pressed="${ui.showrated}">${ui.showrated?'Bewertete ausblenden':'Bewertete auch zeigen'}</button></div><div class="frow"><span class="ft">Datum</span><input type="date" class="inp" data-sc="f" data-k="von" value="${esc(ui.f.von)}" aria-label="von" style="width:auto"><span class="ghost">bis</span><input type="date" class="inp" data-sc="f" data-k="bis" value="${esc(ui.f.bis)}" aria-label="bis" style="width:auto"></div>`;
  $('#active').innerHTML=activeChips('f',['sam',...ANA_KEYS]);const q=queue();let i=q.findIndex(x=>x.p.id===ui.cur);if(i<0)i=0;
- const oc=$('#ana-open');const remaining=S.texts.filter(t=>textMatches(t,ui.f)).reduce((n,t)=>n+t.absaetze.filter(p=>ui.mode==='fn'?p.fn===null:p.rel===null).length,0);if(oc)oc.textContent=S.texts.length?`Noch ${remaining} Absätze offen in der aktuellen Auswahl`:'';
+ const remaining=S.texts.filter(t=>textMatches(t,ui.f)).reduce((n,t)=>n+t.absaetze.filter(p=>ui.mode==='fn'?p.fn===null:p.rel===null).length,0);
  const st=$('#stage');if(!q.length){const any=S.texts.some(t=>textMatches(t,ui.f));st.innerHTML=`<div class="card empty"><b>${!S.texts.length?'Noch keine Texte.':any?'Alles bewertet.':'Keine passenden Texte.'}</b>${!S.texts.length?' Unter „Texte“ eigene Artikel hinzufügen.':any?' In dieser Auswahl sind keine Absätze offen.':'Filter anpassen oder löschen.'}</div>`;ui.cur=null;return;}
  const {t,p}=q[i],title=t.ueberschrift||'(ohne Überschrift)',au=t.autor||'Autor fehlt',date=t.datum||'Datum fehlt';
  const fnm=ui.mode==='fn',nT=t.absaetze.length,pc=modePct(t),pad=n=>String(n).padStart(2,'0');
@@ -666,9 +666,9 @@ function renderAna(){
  const controls=fnm?`<div class="flagrow"><span class="fl-lab">Zusätzlich</span>${['oton','fremd'].map(f=>`<button class="flag ${p.flags.includes(f)?'on':''}" data-act="flag" data-v="${f}" aria-pressed="${p.flags.includes(f)}">${FLAGS[f]}</button>`).join('')}</div><div class="fngrid" role="group" aria-label="Aufbau-Rolle des Absatzes">${FN_KEYS.map(k=>`<button class="fnb ${p.fn===k?'on':''}" style="--c:${FN[k].c}" data-act="fn" data-v="${k}" aria-pressed="${p.fn===k}"><b>${FN[k].k}</b><span>${FN[k].l.replace('/','/<wbr>')}</span></button>`).join('')}</div>`
   :`<div class="decide" aria-label="Absatz einstufen"><button class="dec no" data-act="rate" data-v="n" aria-label="Nicht lesenswert"><span class="ic" aria-hidden="true">×</span><span class="tx"><b>Nein</b><i>dann unwichtig</i></span><kbd aria-hidden="true">←</kbd></button><button class="dec skip" data-act="rate" data-v="s" aria-label="Kontext fehlt"><span class="ic" aria-hidden="true">?</span><span class="tx"><b>Kontext fehlt</b><i>überspringen</i></span><kbd aria-hidden="true">↓</kbd></button><button class="dec yes" data-act="rate" data-v="y" aria-label="Lesenswert"><span class="ic" aria-hidden="true">✓</span><span class="tx"><b>Ja</b><i>noch lesenswert</i></span><kbd aria-hidden="true">→</kbd></button><button class="undo-d" data-act="undo" aria-label="Letzte Einstufung rückgängig machen">↶ Zurück</button></div>`;
  st.innerHTML=`<article class="card play" id="card" data-fn="${fnm}" aria-label="Absatz ${p.nr} aus ${esc(title)}">
-<aside class="grid-left"><div class="gl-a"><div class="stat"><b>${p.nr}/${nT}</b><span>Absatz in diesem Text</span></div><div class="stat"><b>${fmt(remaining)}</b><span>offene Absätze in der Auswahl</span></div></div><div class="gl-d"><div class="lab">Text</div><div class="h">${esc(title)}</div><div class="sm">${esc(au)}${au&&date?' · ':''}${esc(date)}</div>${teaser}<div class="lab" style="margin-top:8px">Position im Text</div><div class="map ${nT>40?'dense':''}">${map}</div></div></aside>
+<aside class="grid-left"><div class="gl-idx"><b>${pad(p.nr)}</b><span>/ ${nT}</span></div><div class="gl-a"><div class="stat"><b>${p.nr}/${nT}</b><span>Absatz in diesem Text</span></div><div class="stat"><b>${fmt(remaining)}</b><span>offene Absätze in der Auswahl</span></div></div><div class="gl-d"><div class="lab">Text</div><div class="h">${esc(title)}</div><div class="sm">${esc(au)}${au&&date?' · ':''}${esc(date)}</div>${teaser}<div class="lab" style="margin-top:8px">Position im Text</div><div class="map ${nT>40?'dense':''}">${map}</div></div></aside>
 <div class="ana-content"><div class="card-meta"><span>Absatz ${pad(p.nr)} / ${pad(nT)} · Text ${pc} % ${what}</span><span class="m-open">${fmt(remaining)} offen</span></div><div class="pseg">${segs}</div><div class="q-lab">${qtxt}</div><div class="idx"><b>${pad(p.nr)}</b><span>/ ${nT}</span></div>${p.zw?`<div class="zw-line">${esc(p.zw)}</div>`:''}<div class="para-scroll" tabindex="0"><p class="para">${esc(p.text)}</p></div><div class="under"><div class="ueb">${esc(title)}</div><div class="byline">${esc(au)}${au&&date?' · ':''}${esc(date)}</div>${teaser}</div>${controls}<div class="rowbar"><button class="btn ghost" data-act="undo" aria-label="Letzte Einstufung rückgängig machen">↶ <span>Zurück</span></button><span class="ghost">${hint}</span></div></div>
-<aside class="grid-right"><div class="gr-a">Dieser Text: ${pc} % der Absätze ${what}. Der Fortschritt oben bezieht sich auf den gesamten Bestand.</div><div class="gr-d"><div class="lab">Fortschritt in diesem Text</div><div class="sm">${pc} % der Absätze ${what}</div><div class="blocks">${blocks}</div></div></aside></article>`;
+<aside class="grid-right"><div class="gr-d"><div class="lab">Fortschritt in diesem Text</div><div class="sm">${pc} % der Absätze ${what}</div><div class="blocks">${blocks}</div></div></aside></article>`;
  ui.cur=p.id;
 }
 
@@ -1886,6 +1886,37 @@ body[data-design="a"] .fnb{border-radius:6px}
  .tbl .sub{display:block}
 }
 @media(max-width:760px){body[data-design="d"] .play .gl-d,body[data-design="d"] .top-stat span,body[data-design="d"] .top-stat em{display:none}}
+/* Kopfzeile: Gestaltungsknopf rechts */
+body[data-design] .top .gear{margin-left:auto}
+.gl-idx{display:none}
+
+/* Feuilleton: ohne rechte Spalte */
+@media(min-width:761px){
+ body[data-design="a"] article.card.play{grid-template-columns:minmax(130px,1fr) minmax(0,4.4fr)}
+ body[data-design="a"] .play .grid-right{display:none}
+}
+
+/* Raster: kompakt, Knöpfe ohne Scrollen sichtbar */
+@media(min-width:761px){
+ body[data-design="d"] #v-ana{display:grid;grid-template-columns:minmax(0,1fr) auto}
+ body[data-design="d"] #v-ana>*{grid-column:1/-1}
+ body[data-design="d"] #v-ana>.anabar{grid-column:1;grid-row:1;margin:0 0 10px}
+ body[data-design="d"] #v-ana>.leadrow{grid-column:2;grid-row:1;margin:0 0 10px;display:flex;align-items:center;padding-left:12px;border-top:1px solid #0a0a0a;border-bottom:1px solid #0a0a0a}
+ body[data-design="d"] article.card.play{grid-template-columns:minmax(0,1fr) minmax(0,3.2fr);gap:28px;padding:4px 0}
+ body[data-design="d"] .play .grid-left{display:flex;flex-direction:column;gap:14px}
+ body[data-design="d"] .play .gl-idx{display:block;font:800 clamp(52px,6vw,76px)/.9 "Inter Tight",sans-serif;letter-spacing:-.06em;color:#0a0a0a}
+ body[data-design="d"] .play .gl-idx span{font-size:20px;letter-spacing:-.02em;color:#8a8a8a;font-weight:600;margin-left:4px}
+ body[data-design="d"] .play .idx{display:none}
+ body[data-design="d"] .play .q-lab{margin-bottom:10px}
+ body[data-design="d"] .play .gl-d .h{font-size:17px}
+ body[data-design="d"] .play .grid-right{display:none}
+ body[data-design="d"] .play .para{font-size:clamp(18px,.6vw + 12px,21px);line-height:1.48}
+ body[data-design="d"] .play .para-scroll{max-height:max(140px,calc(100vh - 430px));overflow:auto}
+ body[data-design="d"] .play[data-fn="true"] .para-scroll{max-height:max(140px,calc(100vh - 480px))}
+ body[data-design="d"] .flagrow{margin-top:12px}
+ body[data-design="d"] .fngrid{margin-top:10px}
+ body[data-design="d"] .decide{margin-top:16px}
+}
 </style>
 <script>(function(){
 const DLG=document.getElementById('dlg-design'), KEY='textlabor-appearance-v1';
