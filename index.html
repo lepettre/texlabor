@@ -475,10 +475,14 @@ const GROUPS=[
 ];
 const GROUP_OPEN='Ungeklärt';
 const GCOL={'Mit Anlass, bleibt aktuell':'#16794a','Mit Anlass, aber kurzlebig':'#c98a0b','Zeitlos lesenswert':'#2f6fb0','Unwichtig & nicht lesenswert':'#b3362f',[GROUP_OPEN]:'#9a9aa3'};
-const FN={szene:{l:'Szene',c:'#4F7CAC',k:'1'},these:{l:'Aufblase/These',c:'#C4574B',k:'2'},oton:{l:'O-Ton',c:'#D9A441',k:'3'},fremd:{l:'Fremdstimme',c:'#5E9B7A',k:'4'},deutung:{l:'Deutung',c:'#8C7AA8',k:'5'},biografie:{l:'Biografie',c:'#B8789A',k:'6'},kontext:{l:'Kontext',c:'#6D8191',k:'7'},detail:{l:'Detail',c:'#3F9C9A',k:'8'}};
-const FN_KEYS=['szene','these','oton','fremd','deutung','biografie','kontext','detail'];
+const FN={ereignis:{l:'Ereignis',c:'#4F7CAC',k:'1',h:'Was geschieht oder geschah: Handlung, Vorgang'},kern:{l:'Kern',c:'#C4574B',k:'2',h:'Worum es geht: These, Frage, Zuspitzung (Aufblase)'},beleg:{l:'Beleg',c:'#3F9C9A',k:'3',h:'Was die Aussage stützt: Fakten, Zahlen, Dokumente, Beispiele'},hintergrund:{l:'Hintergrund',c:'#6D8191',k:'4',h:'Wie es dazu kam: Vorgeschichte, Zusammenhang, Erklärung'},person:{l:'Person',c:'#B8789A',k:'5',h:'Wer jemand ist: Herkunft, Werdegang, Motive'},stimme:{l:'Stimme',c:'#D9A441',k:'6',h:'Jemand kommt zu Wort: Aussage, Reaktion, Einschätzung'},deutung:{l:'Deutung',c:'#8C7AA8',k:'7',h:'Was es bedeutet: Einordnung und Bewertung durch den Autor'},ausblick:{l:'Ausblick',c:'#5E9B7A',k:'8',h:'Was folgt: Konsequenzen, Erwartungen, offene Fragen'}};
+const FN_KEYS=['ereignis','kern','beleg','hintergrund','person','stimme','deutung','ausblick'];
+/* Alte Aufbau-Rollen (bis Oktober 2026) werden beim Laden übertragen */
+const FN_ALT={szene:['ereignis','szene'],these:['kern'],oton:['stimme','oton'],fremd:['stimme','fremd'],deutung:['deutung'],biografie:['person'],kontext:['hintergrund'],detail:['beleg']};
+const FLAG_KEYS=['szene','oton','fremd'];
 const REL={y:{l:'lesenswert',c:'#16794a'},n:{l:'nicht lesenswert',c:'#c0473f'},s:{l:'Kontext fehlt',c:'#c8b48a'},o:{l:'unbewertet',c:'#dcd9d0'}};
-const FLAGS={oton:'O-Ton-Zitat (O)',fremd:'Fremdstimme (F)'};
+const FLAGS={szene:'Szenisch (S)',oton:'O-Ton (O)',fremd:'Fremdstimme (F)'};
+const FLAG_KURZ={szene:'szenisch',oton:'O-Ton',fremd:'Fremdstimme'};
 const ZUG_ORDER=['Plus','Heft','frei'];
 const ICON_SHUF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>';
 const ICON_RESH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>';
@@ -515,8 +519,8 @@ function normText(t){
   o.absaetze=(Array.isArray(o.absaetze)?o.absaetze:[]).filter(p=>p&&typeof p.text==='string'&&p.text.trim()).map((p,i)=>({
     id:o.id+'-'+(i+1), nr:i+1, text:p.text.trim(), zeichen:p.text.trim().length, zw:(typeof p.zw==='string'?p.zw.trim():''),
     rel:(p.rel==='y'||p.rel==='n'||p.rel==='s')?p.rel:null,
-    fn:FN_KEYS.includes(p.fn)?p.fn:null,
-    flags:Array.isArray(p.flags)?p.flags.filter(f=>f==='oton'||f==='fremd'):[]
+    fn:FN_KEYS.includes(p.fn)?p.fn:(FN_ALT[p.fn]?FN_ALT[p.fn][0]:null),
+    flags:uniq([...(Array.isArray(p.flags)?p.flags:[]),...(FN_ALT[p.fn]?FN_ALT[p.fn].slice(1):[])]).filter(f=>FLAG_KEYS.includes(f))
   }));
   return o;
 }
@@ -662,8 +666,8 @@ function renderAna(){
  const blocks=Array.from({length:20},(_,k)=>`<i class="${k<Math.round(pc/5)?'f':''}"></i>`).join('');
  const what=fnm?'klassifiziert':'bewertet';
  const qtxt=fnm?'Welche Rolle spielt dieser Absatz im Aufbau?':'Ist dieser Absatz in 14 Tagen noch lesenswert?';
- const hint=fnm?'Tasten 1–8 · O O-Ton · F Fremdstimme · Z zurück':'Wischen: links Nein · rechts Ja';
- const controls=fnm?`<div class="flagrow"><span class="fl-lab">Zusätzlich</span>${['oton','fremd'].map(f=>`<button class="flag ${p.flags.includes(f)?'on':''}" data-act="flag" data-v="${f}" aria-pressed="${p.flags.includes(f)}">${FLAGS[f]}</button>`).join('')}</div><div class="fngrid" role="group" aria-label="Aufbau-Rolle des Absatzes">${FN_KEYS.map(k=>`<button class="fnb ${p.fn===k?'on':''}" style="--c:${FN[k].c}" data-act="fn" data-v="${k}" aria-pressed="${p.fn===k}"><b>${FN[k].k}</b><span>${FN[k].l.replace('/','/<wbr>')}</span></button>`).join('')}</div>`
+ const hint=fnm?'Tasten 1–8 · S szenisch · O O-Ton · F Fremdstimme · Z zurück':'Wischen: links Nein · rechts Ja';
+ const controls=fnm?`<div class="flagrow"><span class="fl-lab">Zusätzlich</span>${FLAG_KEYS.map(f=>`<button class="flag ${p.flags.includes(f)?'on':''}" data-act="flag" data-v="${f}" aria-pressed="${p.flags.includes(f)}">${FLAGS[f]}</button>`).join('')}</div><div class="fngrid" role="group" aria-label="Aufbau-Rolle des Absatzes">${FN_KEYS.map(k=>`<button class="fnb ${p.fn===k?'on':''}" style="--c:${FN[k].c}" data-act="fn" data-v="${k}" aria-pressed="${p.fn===k}" title="${esc(FN[k].h)}"><b>${FN[k].k}</b><span>${FN[k].l.replace('/','/<wbr>')}</span></button>`).join('')}</div>`
   :`<div class="decide" aria-label="Absatz einstufen"><button class="dec no" data-act="rate" data-v="n" aria-label="Nicht lesenswert"><span class="ic" aria-hidden="true">×</span><span class="tx"><b>Nein</b><i>dann unwichtig</i></span><kbd aria-hidden="true">←</kbd></button><button class="dec skip" data-act="rate" data-v="s" aria-label="Kontext fehlt"><span class="ic" aria-hidden="true">?</span><span class="tx"><b>Kontext fehlt</b><i>überspringen</i></span><kbd aria-hidden="true">↓</kbd></button><button class="dec yes" data-act="rate" data-v="y" aria-label="Lesenswert"><span class="ic" aria-hidden="true">✓</span><span class="tx"><b>Ja</b><i>noch lesenswert</i></span><kbd aria-hidden="true">→</kbd></button><button class="undo-d" data-act="undo" aria-label="Letzte Einstufung rückgängig machen">↶ Zurück</button></div>`;
  st.innerHTML=`<article class="card play" id="card" data-fn="${fnm}" aria-label="Absatz ${p.nr} aus ${esc(title)}">
 <aside class="grid-left"><div class="gl-idx"><b>${pad(p.nr)}</b><span>/ ${nT}</span></div><div class="gl-a"><div class="stat"><b>${p.nr}/${nT}</b><span>Absatz in diesem Text</span></div><div class="stat"><b>${fmt(remaining)}</b><span>offene Absätze in der Auswahl</span></div></div><div class="gl-d"><div class="lab">Text</div><div class="h">${esc(title)}</div><div class="sm">${esc(au)}${au&&date?' · ':''}${esc(date)}</div>${teaser}<div class="lab" style="margin-top:8px">Position im Text</div><div class="map ${nT>40?'dense':''}">${map}</div></div></aside>
@@ -855,7 +859,7 @@ function renderRd(){
     <div class="byl">${t.autor?'Von '+esc(t.autor):''}${t.datum?' · '+esc(t.datum):''}</div>
     ${t.teaser?`<details class="teaser reader-teaser"><summary>Teaser ansehen</summary><p>${esc(t.teaser)}</p></details>`:''}
     ${t.absaetze.map((p,i)=>{const k=segKey(p);const tag=k!=='o'?`<span class="tag" style="background:${segCol(k)}">${esc(segLab(k))}</span>`:'';
-      const fl=p.flags.map(f=>`<span class="fl">${f==='oton'?'· O-Ton':'· Fremdstimme'}</span>`).join('');
+      const fl=p.flags.map(f=>`<span class="fl">· ${FLAG_KURZ[f]||f}</span>`).join('');
       return `${p.zw?`<h3 class="zw">${esc(p.zw)}</h3>`:''}<p class="seg ${dim(p)?'dim':''}" id="seg-${i}" style="border-left-color:${segCol(k)};font-size:${r.fs}px">${tag}${fl}${esc(p.text)}</p>`;}).join('')}
     <div class="row" style="justify-content:center;margin-top:10px"><button class="btn" data-act="rdexport" data-id="${esc(t.id)}">Als Reader-Datei exportieren</button></div>`;
 }
@@ -1488,7 +1492,7 @@ document.addEventListener('keydown',e=>{
     else if(e.key==='ArrowDown'||k==='s'){e.preventDefault();rate('rel','s');}
   } else {
     const idx=FN_KEYS.findIndex((x,i)=>String(i+1)===e.key);
-    if(idx>=0)rate('fn',FN_KEYS[idx]); else if(k==='o')rate('flag','oton'); else if(k==='f')rate('flag','fremd');
+    if(idx>=0)rate('fn',FN_KEYS[idx]); else if(k==='s')rate('flag','szene'); else if(k==='o')rate('flag','oton'); else if(k==='f')rate('flag','fremd');
   }
   if(k==='z')undo();
 });
