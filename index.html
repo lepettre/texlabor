@@ -507,7 +507,7 @@ function dateKey(t){const m=String(t.datum||'').match(/(\d{1,2})\.(\d{1,2})\.(\d
 function newId(){return 't'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 
 /* Reinigung importierter Texte (Spiegelbild von textschule/werkzeug/reinigen.py, REIN_V muss gleich sein) */
-const REIN_V=1;
+const REIN_V=2;
 const R_FW='(?:Der|Die|Das|Den|Dem|Des|Ein|Eine|Einen|Einem|Für|In|Im|Am|An|Auf|Aus|Bei|Seit|Nach|Vor|Mit|Doch|Auch|Als|Wie|Was|Wer|Wo|Sie|Er|Es|Wir|Ich|Dabei|Damit|Dort|So|Zuletzt|Zudem|Und|Aber|Denn|Dass|Nun|Noch|Schon|Erst|Bis|Um|Über|Unter|Gegen|Zwischen|Während|Trotz|Statt|Laut|Viele|Einige|Alle|Diese|Dieser|Dieses|Kurz|Jetzt|Heute|Gestern|Damals|Seither|Danach|Zwar|Tatsächlich|Allerdings|Stattdessen|Immerhin|Ausgerechnet|Einmal|Dann|Später|Zuerst|Anfangs|Wenn|Weil|Ob|Man|Unser|Unsere|Mein|Meine|Ihr|Ihre|Sein|Seine|Jeder|Jede|Kein|Keine|Nur|Fast|Mehr|Etwa|Rund|Beim|Zum|Zur|Vom)';
 const R_WB='(?![\\p{L}\\d_])';
 const R_ZW=new RegExp('^([»„A-ZÄÖÜ0-9][^.!?:;»«„“]{6,90}?[a-zäöüß0-9«“)]) ('+R_FW+R_WB+'[\\s\\S]*)$','u');
@@ -522,25 +522,31 @@ const R_BLOCK=/\s*»([^«]{30,400})«/g;
 const R_SATZ=/(?<=[.!?…])\s+(?=[»„A-ZÄÖÜ])/;
 const R_INTERN=/sticky navigation|Anreißer|könntet ihr|bitte noch|TODO/i;
 const R_INFO=/^(Zur Person|Wie diese Geschichte entstanden ist)(?![\p{L}\d_])/u;
+const R_PARTIKEL=/^(?:(?:al|el|ad|as|asch|ash|ar|at|az|ul)-[A-ZÄÖÜ]|(?:von|van|de|del|della|di|da|du|dos|le|la|zu|ter|ten|bin|ibn|ben|abu|bint)[,.]?$)/;
+const R_NAME="[A-ZÄÖÜ]\\p{L}[\\p{L}\\-'.]*(?:-\\p{L}+)*(?: (?:[A-ZÄÖÜ]\\p{L}[\\p{L}\\-'.]*(?:-\\p{L}+)*|von|van|de|der|zu|al-\\p{L}+)){0,3}";
+const R_AUTOREN_REST=new RegExp('^((?:'+R_NAME+'; )+'+R_NAME+') (?='+R_FW+R_WB+')','u');
 const R_SLUG=/^(?:[a-z0-9-]*-a-[0-9a-f-]{8,}|[0-9a-f]{8,})\s+/;
 const rNorm=s=>s.replace(/[»«„“"]/g,'').replace(/\s+/g,' ').trim();
 const rKern=s=>rNorm(s).replace(/[.!?,;: ]+$/,'');
 const rSaetze=x=>x.split(R_SATZ).filter(s=>s.trim());
 const rGross=w=>/^[A-ZÄÖÜ]/.test(w);
+const rNamenswort=w=>rGross(w)||R_PARTIKEL.test(w);
 function rWoerter(text,pos,len){const out=[],re=/\S+/g,sub=text.slice(pos,pos+len);let m;while((m=re.exec(sub)))out.push({w:m[0],start:m.index});return out;}
 function rKastenEnde(text,pos){
   const W=rWoerter(text,pos,160);
-  if(!W.length||!rGross(W[0].w))return null;
+  if(!W.length||!rGross(W[0].w)||R_FW_RX.test(W[0].w))return null;
   let komma=null;for(let k=0;k<Math.min(5,W.length);k++)if(W[k].w.endsWith(',')){komma=k;break;}
+  if(komma!==null&&!W.slice(0,komma+1).every(x=>rNamenswort(x.w)))return null;
   for(let j=1;j<Math.min(W.length,12);j++){
-    if(komma===null&&j>4)break;
     const letztes=W[j-1].w,rest=W[j].w;
-    if(rGross(letztes)&&(R_FW_RX.test(rest)||rest.startsWith('»')))return [pos+W[j].start,komma!==null];
+    if(komma===null&&j>4)break;
+    if(komma===null&&!rNamenswort(letztes))break;
+    if(rNamenswort(letztes)&&(R_FW_RX.test(rest)||rest.startsWith('»')))return [pos+W[j].start,komma!==null];
   }
   if(komma!==null){
     for(let j=komma+2;j<Math.min(W.length,10);j++){
       const letztes=W[j-1].w.replace(/^[,.]+|[,.]+$/g,''),rest=W[j].w.replace(/^[,.]+|[,.]+$/g,'');
-      if(R_ROLLE.test(letztes)&&rGross(rest)&&!R_ROLLE.test(rest))return [pos+W[j].start,true];
+      if(rGross(letztes)&&letztes.length>=5&&R_ROLLE.test(letztes)&&rGross(rest)&&!R_ROLLE.test(rest))return [pos+W[j].start,true];
     }
   }
   return null;
@@ -560,6 +566,11 @@ function reinigen(t){
   if((t.rein||0)>=REIN_V)return t;
   t.teaser=String(t.teaser||'').replace(R_SLUG,'');
   let A=(t.absaetze||[]).map(p=>Object.assign({},p,{zw:p.zw||'',kasten:p.kasten||''}));
+  // 0) umgebrochene Autorenzeile
+  const ma=A.length?A[0].text.match(R_AUTOREN_REST):null;
+  if(ma&&t.autor){const au=String(t.autor).trim().replace(/;+$/,''),letzter=au.split(/\s*;\s*/).pop();
+    if(!String(t.autor).includes(ma[1].split('; ').pop()))t.autor=au+(letzter.includes(' ')?'; ':' ')+ma[1];
+    A[0].text=A[0].text.slice(ma[0].length).replace(/^\s+/,'');}
   // 2) interne Notizen
   let intern=false;
   A.forEach(p=>{const x=p.text.replace(/^\s+/,'');if(x.startsWith('***')){const rest=x.replace(/^[*\s]+/,'').trim();intern=R_INTERN.test(rest);p.text=rest;}if(intern)p.kasten='intern';});
@@ -569,6 +580,16 @@ function reinigen(t){
   A.forEach(p=>{if(p.kasten)return;const m=p.text.match(R_ZW);
     if(m&&!R_KEIN_ZW.test(p.text)&&!R_ARTIKEL_ENDE.test(m[1])&&!R_EIGENNAME.test(m[2])){p.zw=(p.zw?p.zw+' · ':'')+m[1];p.text=m[2];}});
   const voll=()=>A.map(q=>q.text).join(' ');
+  // 4b) Zwischenzeile direkt vor Zitatbeginn
+  A.forEach(p=>{if(p.kasten||R_KEIN_ZW.test(p.text))return;
+    const m=p.text.match(/^(?:(?:[A-ZÄÖÜ][\p{L}\d_\-ʼ']+|der|die|das|des|dem|den|von|und|im|in|mit|für|zu|ein|eine) ){1,4}(?=»)/u);
+    const w=m?m[0].split(/\s+/).filter(Boolean):[];
+    if(m&&w.length>=2&&rGross(w[w.length-1])&&!R_FW_RX.test(w[0])){p.zw=(p.zw?p.zw+' · ':'')+m[0].trim();p.text=p.text.slice(m[0].length);}});
+  // 4c) Zwischenzeile als eigener Absatz an den Folgeabsatz hängen
+  A=A.filter((p,k)=>{const x=p.text,nx=A[k+1];
+    if(!p.kasten&&nx&&x.length<=90&&!/[.!?…]$|[.!?…][«“"]$/.test(x)&&!R_KEIN_ZW.test(x)&&!p.rel&&!(Array.isArray(p.fn)?p.fn.length:p.fn)&&!nx.kasten){
+      nx.zw=[p.zw,x,nx.zw].filter(Boolean).join(' · ');return false;}
+    return true;});
   // 5) Zitatkästen mit Zuschreibung; ggf. Absatz trennen
   const neu=[];
   A.forEach((p,pi)=>{
@@ -624,6 +645,50 @@ function reinigen(t){
   t.absaetze=A;t.rein=REIN_V;
   return t;
 }
+/* Rohfassung kompakt merken: unveränderte Absätze als Verweis auf den gereinigten Absatz, geänderte im Wortlaut.
+   So lässt sich jede neue Fassung der Reinigung wieder auf den Rohtext anwenden, statt auf den Ergebnissen alter Fehler. */
+function rohMerken(t,roh){
+  const idx=new Map();t.absaetze.forEach((p,k)=>{const key=p.text+'\u0001'+(p.zw||'');if(!idx.has(key))idx.set(key,k);});
+  return roh.map(p=>{const k=idx.get(p.text+'\u0001'+(p.zw||''));return k!==undefined?k:{t:p.text,z:p.zw||''};});
+}
+function rohAbsaetze(t){
+  return t.roh.map(x=>{if(typeof x==='number'){const p=t.absaetze[x];return p?{text:p.text,zw:p.zw||'',rel:p.rel||null,fn:p.fn||null,flags:(p.flags||[]).slice()}:null;}
+    return x&&x.t?{text:x.t,zw:x.z||''}:null;}).filter(Boolean);
+}
+const hatLabel=p=>!!(p.rel||p.fn||(p.flags&&p.flags.length));
+/* Labels von alten auf neue Absätze übertragen (gleicher Wortlaut, sonst die meisten gemeinsamen Sätze) */
+function labelsUebertragen(alt,neu){
+  const satzSet=p=>new Set(rSaetze(p.text).map(rKern).filter(s=>s.length>=20));
+  if(!alt.some(hatLabel))return 0;
+  const gleich=new Map();alt.forEach(p=>{const k=rNorm(p.text);if(!gleich.has(k))gleich.set(k,p);});
+  const AS=alt.filter(hatLabel).map(p=>({p,s:satzSet(p),n:rNorm(p.text)}));
+  let n=0;
+  neu.forEach(q=>{
+    if(hatLabel(q))return;
+    const qn=rNorm(q.text),qs=satzSet(q);
+    let best=gleich.get(qn)||null,bs=0;
+    if(best){if(hatLabel(best)){q.rel=best.rel||null;q.fn=best.fn||null;q.flags=(best.flags||[]).slice();n++;}return;}
+    AS.forEach(a=>{
+      let sc=0;
+      qs.forEach(x=>{if(a.s.has(x))sc+=x.length;});
+      if(!sc&&qn.length>=20&&(a.n.includes(qn)||qn.includes(a.n)))sc=Math.min(qn.length,a.n.length);
+      if(sc>bs){bs=sc;best=a.p;}
+    });
+    if(best){q.rel=best.rel||null;q.fn=best.fn||null;q.flags=(best.flags||[]).slice();n++;}
+  });
+  return n;
+}
+/* Einstieg: reinigt beim ersten Mal den Eingang, nach einer neuen Fassung erneut aus der Rohfassung */
+function aufbereiten(t){
+  if((t.rein||0)>=REIN_V)return t;
+  const alt=(t.absaetze||[]).map(p=>Object.assign({},p));
+  const roh=Array.isArray(t.roh)&&t.roh.length?rohAbsaetze(t):alt.map(p=>Object.assign({},p));
+  t.absaetze=roh.map(p=>Object.assign({},p));t.rein=0;
+  reinigen(t);
+  labelsUebertragen(alt,t.absaetze);
+  t.roh=rohMerken(t,roh);
+  return t;
+}
 function normText(t){
   const o=Object.assign({id:'',medium:'',zugang:'',datum:'',dachzeile:'',ueberschrift:'',teaser:'',autor:'',anlass:null,anlass_quelle:null,sammlungen:[],tags:[],absaetze:[]},t||{});
   o.id=o.id||newId();
@@ -635,7 +700,7 @@ function normText(t){
   delete o.ressort; delete o.heft; delete o.schlagwoerter;
   o.anlass=(o.anlass==='ja'||o.anlass==='nein')?o.anlass:null;
   o.absaetze=(Array.isArray(o.absaetze)?o.absaetze:[]).filter(p=>p&&typeof p.text==='string'&&p.text.trim());
-  reinigen(o);
+  aufbereiten(o);
   o.absaetze=o.absaetze.map((p,i)=>({
     id:o.id+'-'+(i+1), nr:i+1, text:p.text.trim(), zeichen:p.text.trim().length, zw:(typeof p.zw==='string'?p.zw.trim():''), kasten:(p.kasten==='intern'||p.kasten==='info')?p.kasten:'',
     rel:(p.rel==='y'||p.rel==='n'||p.rel==='s')?p.rel:null,
@@ -670,7 +735,7 @@ function load(){
 let S=load();
 function save(){
   S.sammlungen=uniq([...S.sammlungen,...S.texts.flatMap(t=>t.sammlungen)]);
-  try{localStorage.setItem(KEY,JSON.stringify({texts:S.texts,sammlungen:S.sammlungen}));}catch(e){}
+  try{localStorage.setItem(KEY,JSON.stringify({texts:S.texts,sammlungen:S.sammlungen}));}catch(e){if(typeof toast==='function')toast('Speichern fehlgeschlagen: Der Browser-Speicher ist voll. Bitte jetzt eine Sicherung herunterladen.');}
 }
 
 /* Zustand */
@@ -1062,7 +1127,7 @@ function importJson(d,mode){
   else throw new Error('format');
   texts=texts.filter(t=>t.absaetze.length||t.ueberschrift);
   if(mode==='replace'){S.texts=[];S.sammlungen=[];}
-  texts.forEach(t=>{const i=S.texts.findIndex(x=>x.id===t.id);if(i>=0)S.texts[i]=t;else S.texts.push(t);});
+  texts.forEach(t=>{const i=S.texts.findIndex(x=>x.id===t.id);if(i>=0){labelsUebertragen(S.texts[i].absaetze,t.absaetze);S.texts[i]=t;}else S.texts.push(t);});
   S.sammlungen=uniq([...S.sammlungen,...sams,...texts.flatMap(t=>t.sammlungen)]);
   save(); render(); return texts.length;
 }
@@ -1221,6 +1286,12 @@ function parseSammelLines(L){
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const FOOTMETA=l=>l.size<9.6&&l.x0>=60&&(UUID.test(l.text)||/^\d{6,12}$/.test(l.text)||/^[A-Za-z0-9_\-]{8,}$/.test(l.text)||/^\d{2}\.\d{2}\.\d{4}, \d{2}:\d{2}$/.test(l.text)||/^Poly_spon|^PMG\d|^Dokumentfehler/.test(l.text));
 const PUBLISHER=/(GmbH|mbH|KG|AG|Verlag|Zentrum|Media|Gesellschaft|Co\.?|rechte vorbehalten)[\s&A-Za-z.,–\-]*$/;
+const R_NAME_GANZ=new RegExp('^'+R_NAME+'$','u');
+function namenZeile(x,bisher){
+  x=String(x||'').trim();if(!x||x.length>220||/^—/.test(x)||R_FW_RX.test(x))return false;
+  if(!x.replace(/;$/,'').split(/\s*;\s*/).every(n=>R_NAME_GANZ.test(n)))return false;
+  return x.includes(';')||/;\s*$/.test(bisher)||!String(bisher).trim().split(/\s*;\s*/).pop().includes(' ');
+}
 function parseArticle(Ls){
   const head=Ls[0];
   const o={medium:'',ressort:'',seiten:'',heft:'',datum:'',zeit:'',dachzeile:'',ueberschrift:'',teaser:'',autor:'',zugang:'',stated:0,uuid:'',absaetze:[],hinweise:[],entfernt:0,heftBox:'',heftHint:false,interview:false,leitartikel:false,mediumRaw:''};
@@ -1236,7 +1307,11 @@ function parseArticle(Ls){
   let i=1,hdr=[];
   for(;i<Ls.length&&i<40;i++){
     const l=Ls[i];
-    if(l.size<9.6&&/^—\s+\S/.test(l.text)){o.autor=l.text.replace(/^—\s*/,'');i++;break;}
+    if(l.size<9.6&&/^—\s+\S/.test(l.text)){o.autor=l.text.replace(/^—\s*/,'');i++;
+      // lange Autorenlisten brechen um: Folgezeilen, die nur aus Namen bestehen, gehören dazu
+      while(i<Ls.length&&namenZeile(Ls[i].text,o.autor)){const au=o.autor.trim(),fertig=/;$/.test(au)||au.split(/\s*;\s*/).pop().includes(' ');
+        o.autor=au.replace(/;+$/,'')+(fertig?'; ':' ')+Ls[i].text.trim();i++;}
+      break;}
     if(l.size>10.3&&!l.bold&&l.x0>=58&&l.x0<76&&hdr.some(h=>h.x0<100&&h.size>=9.9&&h.x0<60)){break;}
     hdr.push(l);
   }
